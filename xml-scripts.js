@@ -3,77 +3,80 @@ $(document).ready(function(){
     
        /*******              ***************      quotes    *********************      *************** */
      $.ajax({
-        url:'https://smileschool-api.hbtn.info/quotes',
+        url:'https://smileschool-api.hbtn.info/xml/quotes',
         method : 'GET',
-        dataType:'json'
+        dataType:'xml'
         ,
         beforeSend: function() {
             $('#quotes-loader').show();
         },
-        success: function (res) {
+        success: function (xml) {
             $('#quotes-loader').hide();
-             let data = res;
-            for (let i = 0; i < data.length; i++) {
+            $.each($(xml).find('quote'), function(i){
                 
                 
                 let $html = (`<div class="carousel-item carousel-item-content ${i === 0 ? 'active' : ''}">
                                     <div class="row">
                                     <div class="col-sm-3 text-center">
-                                        <img class="rounded-circle" src="${data[i].pic_url}" class="d-block w-100" alt="random person image">
+                                        <img class="rounded-circle" src="${$(this).find('pic_url').text()}" class="d-block w-100" alt="random person image">
                                     </div>
                                     <div class="col-sm-8 ml-3 d-flex flex-column">
-                                        <div>&lt;&lt;   ${data[i].text} </div>
-                                        <div class="font-weight-bold mt-3">${data[i].name}</div>
-                                        <div>${data[i].title}</div>
+                                        <div>&lt;&lt;  ${$(this).find('text').text()} </div>
+                                        <div class="font-weight-bold mt-3">${$(this).find('name').text()}</div>
+                                        <div>${$(this).find('title').text()}</div>
                                     </div>
                                 </div>
                                 </div> `
                                 );
             $("#1carousel-inner").append($html);
-              }  
+            })  
+            },
+            error: function() {
+                console.log(`An error occured`);
+            }
              
               
-        }
+        
        
     }); 
       /*******              ***************      tutorials    *********************      *************** */
       $.ajax({
-        url:'https://smileschool-api.hbtn.info/popular-tutorials',
+        url:'https://smileschool-api.hbtn.info/xml/popular-tutorials',
         method : 'GET',
-        dataType:'json',
-        success: function (res) {
+        dataType:'xml',
+        success: function (xml) {
+            
             $('#tutorials-loader').hide();
-             let data = res;
-            for (let i = 0; i < data.length; i++) {
+             $.each($(xml).find('video'), function(i) {
                 let $html = (`<div class="text-center col-12 col-sm-6 col-md-3">
                 <div class="carousel-item active">
-                    <img class="w-100" src="${data[i].thumb_url}" alt="smile image">
+                    <img class="w-100" src="${$(this).find('thumb_url').text()}" alt="smile image">
                     <div class="mx-3">
                         <div class="font-weight-bold text-dark text-left mt-3">
-                        ${data[i].title}
+                        ${$(this).find('title').text()}
                         </div>
                         <div class="text-secondary text-left mt-3 mb-3">
-                        ${data[i]['sub-title']}
+                        ${$(this).find('sub-title').text()}
                         </div>
                         <div class="d-flex align-items-center mb-3">
-                            <img src="./images/profile_4.jpg" class="rounded-circle mr-3 video-carousel-img-profile" alt="profile image">
-                            <div class="purple-text font-weight-bold">${data[i].author}</div>
+                            <img src="${$(this).find('author_pic_url').text()}" class="rounded-circle mr-3 video-carousel-img-profile" alt="profile image">
+                            <div class="purple-text font-weight-bold">${$(this).find('author').text()}</div>
                         </div>
                         <div class="d-flex justify-content-between">
                             <div class="d-flex pt-1" id="star">   
                             `
             );
-            for (let index = 0; index < data[i].star; index++) {
+            for (let index = 0; index < $(this).attr('star'); index++) {
                  $html +=  '<img src="./images/star_on.png" class="mr-1 carousel-star-icon" alt="star icon filled in purple">'
                    
             }
           
-            for (let index2 = 0; index2 < 5- data[i].star ; index2++) {
+            for (let index2 = 0; index2 < 5- $(this).attr('star') ; index2++) {
                 $html += '<img src="./images/star_off.png" class="carousel-star-icon" alt="star icon filled in grey">'   
             }
             $html += `</div>
                     <div class="purple-text font-weight-bold">
-                    ${data[i].duration}
+                    ${$(this).find('duration').text()}
                     </div>
                 </div>
                     </div>
@@ -81,7 +84,7 @@ $(document).ready(function(){
                     </div> `
                 
             $("#tutos").append($html);
-              }  
+      })  
              
               
         },
@@ -95,42 +98,42 @@ $(document).ready(function(){
     });
     /*******              ***************      videos    *********************      ***************/
     $.ajax({
-        url:'https://smileschool-api.hbtn.info/latest-videos',
+        url:'https://smileschool-api.hbtn.info/xml/latest-videos',
         method : 'GET',
-        dataType:'json',
-        success: function (res) {
+        dataType:'xml',
+        success: function (xml) {
             $('#videos-loader').hide();
-             let data = res;
-            for (let i = 0; i < data.length; i++) {
+             
+            $.each($(xml).find('video'), function(i) {
                 let $html = (`<div class="text-center col-12 col-sm-6 col-md-3">
                 <div class="carousel-item active">
-                    <img class="w-100" src="${data[i].thumb_url}">
+                    <img class="w-100" src="${$(this).find('thumb_url').text()}">
                     <div class="mx-3">
                         <div class="font-weight-bold text-dark text-left mt-3">
-                        ${data[i].title}
+                        ${$(this).find('title').text()}
                         </div>
                         <div class="text-secondary text-left mt-3 mb-3">
-                        ${data[i]['sub-title']}
+                        ${$(this).find('sub-title').text()}
                         </div>
                         <div class="d-flex align-items-center mb-3">
-                            <img src="${data[i]['author_pic_url']}" class="rounded-circle mr-3 video-carousel-img-profile" alt="profile image">
-                            <div class="purple-text font-weight-bold">${data[i]['author']}</div>
+                        <img src=${$(this).find('author_pic_url').text()} class="rounded-circle mr-3 video-carousel-img-profile" alt="profile image">
+                        <div class="purple-text font-weight-bold">${$(this).find('author').text()}</div>
                         </div>
                         <div class="d-flex justify-content-between">
                             <div class="d-flex pt-1">  
                             `
             );
-            for (let index = 0; index < data[i].star; index++) {
+            for (let index = 0; index < $(this).attr('star'); index++) {
                  $html +=  '<img src="./images/star_on.png" class="mr-1 carousel-star-icon" alt="star icon filled in purple">'
                    
             }
           
-            for (let index2 = 0; index2 < 5- data[i].star ; index2++) {
+            for (let index2 = 0; index2 < 5- $(this).attr('star') ; index2++) {
                 $html += ' <img src="./images/star_off.png" class="carousel-star-icon" alt="star icon filled in grey">'   
             }
             $html += `</div>
                     <div class="purple-text font-weight-bold">
-                    ${data[i].duration}
+                    ${$(this).find('duration').text()}
                     </div>
                 </div>
             </div>
@@ -138,7 +141,7 @@ $(document).ready(function(){
     </div> `
                 
             $("#videos").append($html);
-              }  
+              })  
              
               
         },
@@ -158,9 +161,9 @@ $(document).ready(function(){
     
     function start () {
         $.ajax({
-            url:'https://smileschool-api.hbtn.info/courses',
+            url:'https://smileschool-api.hbtn.info/xml/courses',
             method : 'GET',
-            dataType:'json',
+            dataType:'xml',
             data : {
                 q: $q,
                 topic: $topic,
@@ -170,13 +173,12 @@ $(document).ready(function(){
                 $('#loadercourses').show();
                 console.log('shooow');
             },
-            success: function (res) {
-                console.log(res);
-                let data = res;
+            success: function (xml) {
+                
                 /*********************SEARCH SECTION******************** */
-                for (let i = 0; i < data.topics.length; i++) {
-                    let name = data.topics[i][0].toUpperCase() + data.topics[i].substring(1);
-                    let $btntopic = $(` <button class="dropdown-item" type="button" data-value="${data.topics[i]}">${name}</button> ` );
+                $.each($(xml).find('topics').find('topic'), function(){
+                    let name = $(this).text()[0].toUpperCase() + $(this).text().substring(1);
+                    let $btntopic = $(` <button class="dropdown-item" type="button" data-value="${$(this).text()}">${name}</button> ` );
                     $("#topic").append($btntopic); 
                     $btntopic.click(function(event) {
                         $topic = event.target.getAttribute("data-value");
@@ -185,11 +187,11 @@ $(document).ready(function(){
                       
                         getvideos($q,$topic,$sort);
                     }) ;
-                } 
+                });
                 
-                for (let i = 0; i < data.sorts.length; i++) {
-                    let sortName = data.sorts[i][0].toUpperCase() + data.sorts[i].substr(1,3) + ' ' + data.sorts[i].substr(5, 1).toUpperCase() + data.sorts[i].substr(6);
-                    let $btnsort = $(` <button class="dropdown-item" type="button" data-value="${data.sorts[i]}">${sortName}</button>` );
+                $.each($(xml).find('sorts').find('sort'), function() {
+                    let sortName = $(this).text()[0].toUpperCase() + $(this).text().substr(1,3) + ' ' + $(this).text().substr(5, 1).toUpperCase() + $(this).text().substr(6);
+                    let $btnsort = $(` <button class="dropdown-item" type="button" data-value="${$(this).text()}">${sortName}</button>` );
                     $("#sort").append($btnsort);
                     $btnsort.click(function(event) {
                         sort = event.target.getAttribute("data-value");
@@ -198,7 +200,7 @@ $(document).ready(function(){
                        
                         getvideos($q,$topic,$sort);
                     }) ;
-                }  
+                });  
                
     
                 /*********************RESULTS SECTION******************** */
@@ -208,11 +210,10 @@ $(document).ready(function(){
                     getvideos($q,$topic,$sort);
                 });
                 
-            } /* success end*/ 
-            ,
+            } ,
             error: function() {
                 console.log(`An error occured`);
-            }
+            } /* success end*/ 
         
         }); 
         getvideos($q,$topic,$sort);
@@ -223,9 +224,9 @@ $(document).ready(function(){
     /***** sort function */
     function getvideos($q,$topic,$sort) {
         $.ajax({
-            url: 'https://smileschool-api.hbtn.info/courses',
+            url: 'https://smileschool-api.hbtn.info/xml/courses',
             type: 'GET',
-            dataType: 'json',
+            dataType: 'xml',
             data: {
                 
                 q: $q,
@@ -236,52 +237,52 @@ $(document).ready(function(){
                 $('#loadercourses').show();
                 console.log('shooow2');
             },
-            success: function(response){
+            success: function(xml){
                 
-                let data = response;
-                if (data.courses.length == 1) {
+                let sum = $(xml).find('courses').find('course').length;
+                if ( sum == 1) {
                     $('#videosnum').text('1 video');
                 } else {
-                    $('#videosnum').text(`${response.courses.length} videos`);
+                    $('#videosnum').text(` ${sum} videos`);
                 }
                 $('#loadercourses').hide();
                 $('#vidadd').empty();
-                for (let j = 0; j < data.courses.length;j++ ) {
+                $.each($(xml).find('courses').find('course'), function(i, el) {
                    
                     let $html = `
                     <div class="text-center col-12 col-sm-4 col-md-3 mb-5" >
                     <div class="carousel-item active">
-                    <img class="w-100" src="${data.courses[j]['thumb_url']}">
+                    <img class="w-100" src="${$(this).find('thumb_url').text()}">
                     <div class="mx-3">
                         <div class="font-weight-bold text-dark text-left mt-3">
-                        ${data.courses[j].title}
+                        ${$(this).find('title').text()}
                         </div>
                         <div class="text-secondary text-left mt-3 mb-3">
-                        ${data.courses[j]['sub-title']}
+                        ${$(this).find('sub-title').text()}
                         </div>
                         <div class="d-flex align-items-center mb-3">
-                            <img src="${data.courses[j]['author_pic_url']}" class="rounded-circle mr-3 video-carousel-img-profile" alt="profile image">
-                            <div class="purple-text font-weight-bold">${data.courses[j].author}</div>
+                            <img src="${$(this).find('author_pic_url').text()} " class="rounded-circle mr-3 video-carousel-img-profile" alt="profile image">
+                            <div class="purple-text font-weight-bold">${$(this).find('author').text()}</div>
                         </div>
                         <div class="d-flex justify-content-between">
                             <div class="d-flex pt-1">`
-                            for (let index = 0; index < data.courses[j].star; index++) {
+                            for (let index = 0; index <  $(this).attr('star'); index++) {
                                 $html +=  '<img src="./images/star_on.png" class="mr-1 carousel-star-icon" alt="star icon filled in purple">'
                                 
                         }
-                        for (let index2 = 0; index2 < 5- data.courses[j].star ; index2++) {
+                        for (let index2 = 0; index2 < 5-  $(this).attr('star'); index2++) {
                             $html += ' <img src="./images/star_off.png" class="carousel-star-icon" alt="star icon filled in grey">'   
                         }
                         $html+=  `</div>
                             <div class="purple-text font-weight-bold">
-                            ${data.courses[j].duration}
+                            ${$(this).find('duration').text()}
                             </div>
                         </div>
                     </div>
                 </div>
                 </div>`
                 $('#vidadd').append($html);
-                }
+                });
             },
             error: function() {
                 console.log(`An error occured`);
